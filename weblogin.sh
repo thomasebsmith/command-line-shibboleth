@@ -16,7 +16,7 @@ while true; do
     -c cookies.tmp -b cookies.tmp &> /dev/null
 
   WEBLOGIN_RESPONSE="$(\
-    curl -i --config post-weblogin.curlconfig -c cookies.tmp -b cookies.tmp \
+    curl --config post-weblogin.curlconfig -c cookies.tmp -b cookies.tmp \
     -d \
     "ref=&service=&required=&login=$WL_USER&loginX=$WL_USER&password=$WL_PWD" \
     2>/dev/null
@@ -44,7 +44,11 @@ HOST="$(
 )"
 SIG="$(
   printf '%s' "$DUO_CONFIG" | \
-  sed -n 's/^ *'\''sig_request'\'': '\''\(.*\):APP.*$/\1/p'
+  sed -n 's/^ *'\''sig_request'\'': '\''\(.*\):APP.*'\'',$/\1/p'
+)"
+SIG_PT2="$(
+  printf '%s' "$DUO_CONFIG" | \
+  sed -n 's/^ *'\''sig_request'\'': '\''.*:APP\(.*\)'\'',$/\1/p'
 )"
 ENCODED_SIG="$(printf '%s' "$SIG" | sed 's/|/%7C/g')"
 
@@ -83,3 +87,19 @@ while true; do
     break
   fi
 done
+
+DUO_COOKIE="$(\
+  curl --config post-duo-status.curlconfig -c cookies.tmp -b cookies.tmp \
+    --url "$DUO_STATUS_URL/$TXID" --referer "$DUO_REFERER_URL" \
+    -H "Origin: https://$HOST" -d "sid=$SID" \
+    2> /dev/null | \
+  sed -n 's/.*"cookie": "\([^"]*\)".*/\1/p'
+)"
+ENCODED_DUO_COOKIE="$(\
+  printf '%s:APP%s' "$DUO_COOKIE" "$SIG_PT2" \
+  | sed 's/|/%7C/g' | sed 's/:/%3A/g'
+)"
+
+curl --config post-weblogin.curlconfig -c cookies.tmp -b cookies.tmp \
+  -d "ref=&service=&required=mtoken&duo_sig_response=$ENCODED_DUO_COOKIE" \
+  &>/dev/null

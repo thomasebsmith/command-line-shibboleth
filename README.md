@@ -12,4 +12,4 @@ $ cd command-line-shibboleth/
 $ ./weblogin.sh
   uniqname: <your uniqname here>
   password: <your password here>
-$ curl -c cookies.tmp -b cookies.tmp 'https://my-url-that-requires-shibboleth'
+$ curl -L -c cookies.tmp -b cookies.tmp 'https://url-that-requires-shibboleth'
