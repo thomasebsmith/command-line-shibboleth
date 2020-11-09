@@ -1,0 +1,6 @@
+--url "https://weblogin.umich.edu/"
+--referer "https://weblogin.umich.edu/"
+
+--user-agent "Mozilla/5.0"
+
+-H "Accept: text/html,application/xhtml+xml,application/xml"
