@@ -9,7 +9,7 @@ It may break at any time. Use at your own risk!**
 ```sh
 $ git clone https://github.com/thomasebsmith/command-line-shibboleth.git
 $ cd command-line-shibboleth/
-$ ./weblogin.sh
+$ ./shell/weblogin.sh
   uniqname: <your uniqname here>
   password: <your password here>
 $ curl -L -c cookies.tmp -b cookies.tmp 'https://url-that-requires-shibboleth'
