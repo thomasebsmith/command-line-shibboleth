@@ -9,7 +9,10 @@ It may break at any time. Use at your own risk!**
 ```sh
 $ git clone https://github.com/thomasebsmith/command-line-shibboleth.git
 $ cd command-line-shibboleth/
-$ ./shell/weblogin.sh
+$ pip3 install requests BeautifulSoup
+$ python3 ./src/__main__.py
   uniqname: <your uniqname here>
   password: <your password here>
 $ curl -L -c cookies.tmp -b cookies.tmp 'https://url-that-requires-shibboleth'
+  # Note: The above doesn't quite work - you need to replace the empty strings
+  # with 0s in the fifth column of cookies.tmp to use cURL

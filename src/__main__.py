@@ -47,9 +47,10 @@ try:
         except ValueError:
             choice = None
     
-    exit(0)
     choice = duo_choices[choice - 1]["id"]
     session.two_factor_authenticate(choice)
+    
+    session.save_cookies()
 
 except requests.exceptions.ConnectionError:
     print("Error connecting to Shibboleth server(s).", file=sys.stderr)
