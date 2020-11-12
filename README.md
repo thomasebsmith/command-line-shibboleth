@@ -5,6 +5,12 @@ Shibboleth authentication system*
 **WARNING: This script is not tested and does not handle errors well.
 It may break at any time. Use at your own risk!**
 
+## Requirements
+This repository requires:
+ - Python >= 3.x
+ - Requests
+ - Beautiful Soup
+
 ## Quick Start
 ```sh
 $ git clone https://github.com/thomasebsmith/command-line-shibboleth.git
