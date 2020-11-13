@@ -137,6 +137,12 @@ class ShibbolethSession:
                 desc = f"{factor} to {device_desc}"
                 if factor == "Passcode":
                     desc = f"{factor} from {device_desc}"
+                    next_passcode_el = device_fieldset.select_one(
+                        "input[name=next-passcode]"
+                    )
+                    if next_passcode_el is not None:
+                        passcode = next_passcode_el["value"]
+                        desc += f" (next SMS passcode starts with {passcode})"
                 options.append({
                     "device": device,
                     "factor": factor,
@@ -144,6 +150,7 @@ class ShibbolethSession:
                 })
             sms_el = device_fieldset.select_one("input[name=phone-smsable]")
             smsable = sms_el is not None and sms_el["value"] == "True"
+
             if smsable:
                 options.append({
                     "device": device,
