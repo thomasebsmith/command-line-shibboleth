@@ -22,3 +22,7 @@ $ python3 ./src/__main__.py
 $ curl -L -c cookies.tmp -b cookies.tmp 'https://url-that-requires-shibboleth'
   # Note: The above doesn't quite work - you need to replace the empty strings
   # with 0s in the fifth column of cookies.tmp to use cURL
+```
+
+## Upcoming Features
+ - Support for 2FA via phone calls, codes, and text messages.
