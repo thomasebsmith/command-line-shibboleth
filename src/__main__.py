@@ -32,24 +32,31 @@ try:
             print(err)
 
     print(f"Duo two-factor login for {uniqname}")
-    print("Select one of the following options:")
-    for index, choice in enumerate(duo_choices):
-        print(f" {index + 1}. {choice['description']}")
-    print()
 
-    choice = None
-    while choice is None:
-        choice = input(f"option: ")
-        try:
-            choice = int(choice)
-            if choice < 1 or choice > len(duo_choices):
+    while not session.two_factor_authenticated():
+        print("Select one of the following options:")
+        for index, choice in enumerate(duo_choices):
+            print(f" {index + 1}. {choice['description']}")
+        print()
+
+        choice = None
+        while choice is None:
+            choice = input(f"option: ")
+            try:
+                choice = int(choice)
+                if choice < 1 or choice > len(duo_choices):
+                    choice = None
+            except ValueError:
                 choice = None
-        except ValueError:
-            choice = None
-    
-    choice = duo_choices[choice - 1]["id"]
-    session.two_factor_authenticate(choice)
-    
+
+        choice = duo_choices[choice - 1]
+        passcode = None
+        if choice["factor"] == "Passcode":
+            passcode = input(f"passcode: ")
+
+        if not session.two_factor_authenticate(choice, passcode):
+            print("Denied.\n")
+
     session.save_cookies()
 
 except requests.exceptions.ConnectionError:

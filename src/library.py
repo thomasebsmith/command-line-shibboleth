@@ -110,12 +110,26 @@ class ShibbolethSession:
             allow_redirects=False,
         )
         res_html = BeautifulSoup(res.text, "html.parser")
-        options = res_html.select("select[name=device] > option")
+        device_options = res_html.select("select[name=device] > option")
+        options = []
+        for device_el in device_options:
+            device = device_el["value"]
+            device_desc = device_el.get_text()
+            device_factors = res_html.select(
+                f"fieldset[data-device-index={device}] input[name=factor]"
+            )
+            for factor_el in device_factors:
+                factor = factor_el["value"]
+                desc = f"{factor} to {device_desc}"
+                if factor == "Passcode":
+                    desc = f"{factor} from {device_desc}"
+                options.append({
+                    "device": device,
+                    "factor": factor,
+                    "description": desc,
+                })
 
-        return list(map(lambda option: ({
-            "id": option["value"],
-            "description": option.get_text(),
-        }), options))
+        return options
 
     def _post_duo_auth(self):
         assert(self._duo_config is not None)
@@ -155,7 +169,7 @@ class ShibbolethSession:
     def _duo_sig_suffix(self):
         return self._duo_config["sig_request"].split(":APP")[1]
 
-    def two_factor_authenticate(self, device):
+    def two_factor_authenticate(self, choice, passcode=None):
         """
         Attempt to perform 2FA using the given method.
 
@@ -169,6 +183,9 @@ class ShibbolethSession:
 
         assert(self._duo_config is not None)
 
+        device = choice["device"]
+        factor = choice["factor"]
+
         prompt_url = f"https://{self._duo_config['host']}/frame/prompt"
         prompt_headers = {
             "Accept": "text/plain, */*; q=0.01",
@@ -178,11 +195,13 @@ class ShibbolethSession:
         prompt_data = {
             "sid": self._duo_sid,
             "device": device,
-            "factor": "Duo Push",
+            "factor": factor,
             "out_of_date": "",
             "days_out_of_date": "",
             "days_to_block": "None",
         }
+        if passcode is not None:
+            prompt_data["passcode"] = passcode
 
         self._duo_txid = self._session.post(
             prompt_url,
@@ -210,6 +229,8 @@ class ShibbolethSession:
             ).json()
             if status_dict["response"]["status_code"] == "allow":
                 break
+            elif status_dict["response"]["status_code"] == "deny":
+                return False
 
         cookie_url = f"{status_url}/{self._duo_txid}"
         cookie_headers = status_headers
@@ -240,6 +261,8 @@ class ShibbolethSession:
             data=weblogin_data,
             allow_redirects=False
         )
+        self._two_factor_authenticated = True
+        return True
 
     def save_cookies(self):
         """Save the cookies to the cookie file."""
