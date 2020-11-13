@@ -53,6 +53,15 @@ class ShibbolethSession:
     def two_factor_authenticated(self):
         """Return whether two-factor authentication is complete."""
         return self._two_factor_authenticated
+
+    def check_already_authenticated(self):
+        """Check if the user is already authenticated."""
+        get_res = self._session.get(self._weblogin_url, allow_redirects=False)
+        if get_res.is_redirect:
+            self._authenticated = True
+            self._two_factor_authenticated = True
+            return True
+        return False
     
     def authenticate(self, uniqname, password):
         """
@@ -78,6 +87,12 @@ class ShibbolethSession:
             data=post_data,
             allow_redirects=False,
         )
+        if post_res.is_redirect:
+            # On a redirect, we assume that the user is already authenticated.
+            self._authenticated = True
+            self._two_factor_authenticated = True
+            return None
+
         post_response_html = BeautifulSoup(post_res.text, "html.parser")
         script = post_response_html.find("script", string=self._js_regex)
         error = re.search(self._js_regex, script.string).group(3)

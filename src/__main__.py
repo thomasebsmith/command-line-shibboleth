@@ -22,6 +22,9 @@ cookie_file = args.cookie_file
 
 try:
     session = library.ShibbolethSession(cookie_file)
+    if session.check_already_authenticated():
+        sys.exit(0)
+
     duo_choices = None
     while not session.authenticated():
         uniqname = input("uniqname: ")
