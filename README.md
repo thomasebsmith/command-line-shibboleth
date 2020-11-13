@@ -24,5 +24,6 @@ $ curl -L -c cookies.tmp -b cookies.tmp 'https://url-that-requires-shibboleth'
   # with 0s in the fifth column of cookies.tmp to use cURL
 ```
 
-## Upcoming Features
- - Support for 2FA via phone calls, codes, and text messages.
+## Features
+ - Support for 2FA via Duo Push, phone calls, and passcodes.
+ - Ability to send passcodes via SMS.

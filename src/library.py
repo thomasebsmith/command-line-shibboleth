@@ -115,9 +115,8 @@ class ShibbolethSession:
         for device_el in device_options:
             device = device_el["value"]
             device_desc = device_el.get_text()
-            device_factors = res_html.select(
-                f"fieldset[data-device-index={device}] input[name=factor]"
-            )
+            device_fieldset = res_html.select_one(f"fieldset[data-device-index={device}]")
+            device_factors = device_fieldset.select("input[name=factor]")
             for factor_el in device_factors:
                 factor = factor_el["value"]
                 desc = f"{factor} to {device_desc}"
@@ -127,6 +126,14 @@ class ShibbolethSession:
                     "device": device,
                     "factor": factor,
                     "description": desc,
+                })
+            sms_el = device_fieldset.select_one("input[name=phone-smsable]")
+            smsable = sms_el is not None and sms_el["value"] == "True"
+            if smsable:
+                options.append({
+                    "device": device,
+                    "factor": "sms",
+                    "description": f"SMS passcodes to {device_desc}"
                 })
 
         return options
@@ -203,12 +210,19 @@ class ShibbolethSession:
         if passcode is not None:
             prompt_data["passcode"] = passcode
 
-        self._duo_txid = self._session.post(
+        prompt_res = self._session.post(
             prompt_url,
             headers=prompt_headers,
             data=prompt_data,
             allow_redirects=False
-        ).json()["response"]["txid"]
+        )
+
+        # SMS is not a real 2FA factor. The user will definitely not be
+        #  authenticated after this, since it just texts codes to their phone.
+        if factor == "sms":
+            return False
+
+        self._duo_txid = prompt_res.json()["response"]["txid"]
 
         status_url = f"https://{self._duo_config['host']}/frame/status"
         status_headers = {

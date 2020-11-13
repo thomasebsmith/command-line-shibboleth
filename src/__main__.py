@@ -55,7 +55,7 @@ try:
             passcode = input(f"passcode: ")
 
         if not session.two_factor_authenticate(choice, passcode):
-            print("Denied.\n")
+            print()
 
     session.save_cookies()
 
