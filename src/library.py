@@ -1,5 +1,5 @@
 import ast
-from http.cookiejar import MozillaCookieJar, LoadError
+from cURLCookieJar import cURLCookieJar, LoadError
 import json
 import re
 from time import sleep
@@ -17,7 +17,7 @@ class ShibbolethSession:
     def __init__(self, cookie_file_name):
         """Create an authentication session using the given cookie file."""
         self._session = requests.Session()
-        self._session.cookies = MozillaCookieJar(cookie_file_name)
+        self._session.cookies = cURLCookieJar(cookie_file_name)
         try:
             self._session.cookies.load(ignore_discard=True)
         except (LoadError, OSError):
