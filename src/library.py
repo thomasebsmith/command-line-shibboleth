@@ -4,7 +4,7 @@ import re
 from time import sleep
 from urllib.parse import parse_qs, urlencode, urlparse
 
-from bs4 import BeautifulSoup, element as bs4_element
+from bs4 import BeautifulSoup
 import requests
 
 from .cURLCookieJar import cURLCookieJar, LoadError
