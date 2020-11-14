@@ -63,7 +63,7 @@ class ShibbolethSession:
             self._two_factor_authenticated = True
             return True
         return False
-    
+
     def authenticate(self, uniqname, password):
         """
         Attempt to authenticate the user to Shibboleth.
@@ -195,7 +195,7 @@ class ShibbolethSession:
 
     def _duo_sig(self):
         return self._duo_config["sig_request"].split(":APP")[0]
-    
+
     def _duo_sig_suffix(self):
         return self._duo_config["sig_request"].split(":APP")[1]
 
@@ -304,3 +304,43 @@ class ShibbolethSession:
     def save_cookies(self):
         """Save the cookies to the cookie file."""
         self._session.cookies.save(ignore_discard=True)
+
+    def perform(self, request, handler):
+        """Perform the request, using handler to get credentials if needed."""
+        prepped = self._session.prepare_request(request)
+        response = self._session.send(prepped)
+        if response.url is not None:
+            parsed_url = urlparse(response.url)
+            parsed_weblogin_url = urlparse(self._weblogin_url)
+            if all([
+                parsed_url.scheme == parsed_weblogin_url.scheme,
+                parsed_url.netloc == parsed_weblogin_url.netloc,
+                parsed_url.path == parsed_weblogin_url.path
+            ]):
+                self.login_with_handler(handler)
+                prepped = self._session.prepare_request(request)
+                response = self._session.send(prepped)
+        return response
+
+    def login_with_handler(self, handler):
+        """Performs regular and two-factor authentication using handler."""
+        duo_choices = None
+        credentials = None
+        while not self.authenticated():
+            credentials = handler.get_credentials()
+            try:
+                duo_choices = self.authenticate(
+                    credentials["uniqname"],
+                    credentials["password"]
+                )
+            except ShibbolethError as err:
+                handler.show_credentials_error(err)
+
+        handler.on_two_factor_start(credentials)
+        while not self.two_factor_authenticated():
+            duo_data = handler.choose_duo(duo_choices)
+            if not self.two_factor_authenticate(
+                duo_data["choice"],
+                duo_data["passcode"]
+            ):
+                handler.on_two_factor_fail()
