@@ -16,7 +16,7 @@ This repository requires:
 $ git clone https://github.com/thomasebsmith/command-line-shibboleth.git
 $ cd command-line-shibboleth/
 $ pip3 install requests beautifulsoup4
-$ python3 ./src/__main__.py
+$ ./login
   uniqname: <your uniqname here>
   password: <your password here>
   ...

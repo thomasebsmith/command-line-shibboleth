@@ -1,5 +1,4 @@
 import ast
-from cURLCookieJar import cURLCookieJar, LoadError
 import json
 import re
 from time import sleep
@@ -7,6 +6,8 @@ from urllib.parse import parse_qs, urlencode, urlparse
 
 from bs4 import BeautifulSoup, element as bs4_element
 import requests
+
+from .cURLCookieJar import cURLCookieJar, LoadError
 
 class ShibbolethError(Exception):
     def init(self, message):
