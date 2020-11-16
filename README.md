@@ -3,7 +3,7 @@
 Shibboleth authentication system*
 
 **WARNING: This repository is not thoroughly tested and does not
-handle errors well.  It may break at any time. Use at your own risk!**
+handle errors well. It may break at any time. Use at your own risk!**
 
 ## Requirements
 This repository requires:
@@ -26,10 +26,11 @@ $ curl -L -c cookies.tmp -b cookies.tmp 'https://url-that-requires-shibboleth'
 ## Features
  - Support for 2FA via Duo Push, phone calls, and passcodes.
  - Ability to send passcodes via SMS.
+ - Python library for advanced usage.
 
 ## Installation Notes
 By default, beautifulsoup4 cannot be installed without `sudo` permission.
-If you are installing this on CAEN or a similar environment without this
+If you are installing this in CAEN or a similar environment without this
 permission, try using the following commands to install beautifulsoup4:
 ```sh
 $ mkdir -p ~/some/folder/for/pip/packages
