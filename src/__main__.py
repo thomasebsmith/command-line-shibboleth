@@ -39,6 +39,8 @@ def run():
     except ShibbolethError as e:
         print(e, file=sys.stderr)
         return 1
+    except KeyboardInterrupt:
+        return 1
 
 if __name__ == "__main__":
     sys.exit(run())
