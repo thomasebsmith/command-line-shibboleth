@@ -1,6 +1,6 @@
 # Command-line Shibboleth
 *A command line interface for using the University of Michigan's
-Shibboleth authentication system*
+Shibboleth/Weblogin authentication system*
 
 **WARNING: This repository is not thoroughly tested and does not
 handle errors well. It may break at any time. Use at your own risk!**
