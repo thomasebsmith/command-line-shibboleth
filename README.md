@@ -20,7 +20,7 @@ $ ./login
   uniqname: <your uniqname here>
   password: <your password here>
   ...
-$ curl -L -c cookies.tmp -b cookies.tmp 'https://url-that-requires-shibboleth'
+$ curl -L -c .cookies.tmp -b .cookies.tmp 'https://url-that-requires-shibboleth'
 ```
 
 ## Features
