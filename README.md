@@ -8,8 +8,8 @@ handle errors well. It may break at any time. Use at your own risk!**
 ## Requirements
 This repository requires:
  - Python >= 3.x
- - Requests
- - Beautiful Soup >= 4.x
+ - Python Requests module
+ - Python Beautiful Soup module >= 4.x
 
 ## Quick Start
 ```sh
@@ -29,9 +29,9 @@ $ curl -L -c .cookies.tmp -b .cookies.tmp 'https://url-that-requires-shibboleth'
  - Python library for advanced usage.
 
 ## Installation Notes
-By default, beautifulsoup4 cannot be installed without `sudo` permission.
+By default, `beautifulsoup4` cannot be installed without `sudo` permission.
 If you are installing this in CAEN or a similar environment without this
-permission, try using the following commands to install beautifulsoup4:
+permission, try using the following commands to install `beautifulsoup4`:
 ```sh
 $ mkdir -p ~/some/folder/for/pip/packages
 $ pip3 install -t ~/some/folder/for/pip/packages beautifulsoup4
